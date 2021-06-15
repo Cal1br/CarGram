@@ -6,21 +6,20 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import java.sql.Date;
 import java.sql.Timestamp;
-import java.util.Date;
-import java.util.UUID;
 
 @Entity
 @Table
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private UUID userId; //todo maybe replace with long?
-    @Column(unique = true, nullable = false,updatable = false)
+    private long userId;
+    @Column(unique = true, nullable = false,updatable = false,length = 25)
     private String username;
     @Column(nullable = false)
     private String password;
-    @Column(unique = true, nullable = true,updatable = true)
+    @Column(nullable = true,updatable = true)
     private String biography;
     @Column(nullable = false)
     private boolean isOnline;
@@ -33,11 +32,11 @@ public class User {
 
     }
 
-    public UUID getUserId() {
+    public long getUserId() {
         return userId;
     }
 
-    public void setUserId(final UUID userId) {
+    public void setUserId(final long userId) {
         this.userId = userId;
     }
 
@@ -87,5 +86,18 @@ public class User {
 
     public void setAccountCreation(final Date accountCreation) {
         this.accountCreation = accountCreation;
+    }
+
+    @Override
+    public String toString() {
+        return "User{" +
+                "userId=" + userId +
+                ", username='" + username + '\'' +
+                ", password='" + password + '\'' +
+                ", biography='" + biography + '\'' +
+                ", isOnline=" + isOnline +
+                ", lastOnline=" + lastOnline +
+                ", accountCreation=" + accountCreation +
+                '}';
     }
 }

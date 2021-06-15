@@ -17,12 +17,23 @@ public class CarService {
         this.userService = userService;
     }
 
-    public Car getById(final UUID id) {
+    public Car getById(final long id) {
         final Optional<Car> optionalCar = carRepository.findByCarId(id);
         return optionalCar.orElse(null);
+    }
+    public void deleteById(final long id){
+        carRepository.deleteById(id);
     }
 
     public List<Car> getAll() {
         return (List<Car>) carRepository.findAll();
+    }
+
+    public Car save(final Car car) {
+        return carRepository.save(car);
+    }
+
+    public CarRepository getCarRepository() {
+        return carRepository;
     }
 }

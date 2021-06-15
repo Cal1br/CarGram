@@ -9,22 +9,21 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import java.sql.Date;
-import java.util.UUID;
 
 @Entity
 @Table
 public class Car {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private UUID carId; //todo maybe replace with long?
+    private long carId; //todo maybe replace with long?
     @ManyToOne
     @JoinColumn(name = "userId", nullable = false)
     private User owner;
-    @Column(nullable = false)
+    @Column(nullable = false, length = 15)
     private String name;
-    @Column(nullable = false)
+    @Column(nullable = false, length = 15)
     private String model;
-    @Column
+    @Column(length = 500)
     private String description;
     @Column(nullable = false)
     private short horsepower;
@@ -33,7 +32,7 @@ public class Car {
     @Column(nullable = false, updatable = false)
     private Date manufactureDate;
 
-    public UUID getCarId() {
+    public long getCarId() {
         return carId;
     }
 
@@ -41,27 +40,55 @@ public class Car {
         return owner;
     }
 
+    public void setOwner(final User owner) {
+        this.owner = owner;
+    }
+
     public String getName() {
         return name;
+    }
+
+    public void setName(final String name) {
+        this.name = name;
     }
 
     public String getModel() {
         return model;
     }
 
+    public void setModel(final String model) {
+        this.model = model;
+    }
+
     public String getDescription() {
         return description;
+    }
+
+    public void setDescription(final String description) {
+        this.description = description;
     }
 
     public short getHorsepower() {
         return horsepower;
     }
 
+    public void setHorsepower(final short horsepower) {
+        this.horsepower = horsepower;
+    }
+
     public float getEngineDisplacement() {
         return engineDisplacement;
     }
 
+    public void setEngineDisplacement(final float engineDisplacement) {
+        this.engineDisplacement = engineDisplacement;
+    }
+
     public Date getManufactureDate() {
         return manufactureDate;
+    }
+
+    public void setManufactureDate(final Date manufactureDate) {
+        this.manufactureDate = manufactureDate;
     }
 }

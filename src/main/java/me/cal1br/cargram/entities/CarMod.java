@@ -15,13 +15,13 @@ import java.util.UUID;
 public class CarMod {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private UUID modId;
+    private long modId;
     @ManyToOne
     @JoinColumn(name = "carId",nullable = false)
     private Car car;
     @Column()
     private float price;
-    @Column()
+    @Column(length = 500)
     private String description;
     //Picture;
 

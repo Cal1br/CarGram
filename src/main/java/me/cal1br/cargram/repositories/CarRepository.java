@@ -10,7 +10,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 @Repository
-public interface CarRepository extends CrudRepository<Car, UUID> {
-    Optional<Car> findByCarId(final UUID id);
+public interface CarRepository extends CrudRepository<Car, Long> {
+    Optional<Car> findByCarId(final long id);
     Optional<List<Car>> findByOwner(final User owner);
 }
