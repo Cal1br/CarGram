@@ -23,7 +23,7 @@ public class Car {
     private String name;
     @Column(nullable = false, length = 15)
     private String model;
-    @Column(length = 500)
+    @Column(length = 1500)
     private String description;
     @Column(nullable = false)
     private short horsepower;

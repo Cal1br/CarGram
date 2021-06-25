@@ -13,6 +13,7 @@ import me.cal1br.cargram.utils.LoginRequired;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -35,7 +36,12 @@ public class UserController {
         this.userService = userService;
         this.jwtService = jwtService;
     }
-
+    @LoginRequired
+    @GetMapping("/{id}")
+    public User getUserById(@PathVariable final long id) {
+        return userService.getById(id);
+    }
+    @LoginRequired
     @GetMapping("/all")
     public List<User> getUsers() {
         return userService.getAll();

@@ -3,8 +3,10 @@ package me.cal1br.cargram.controllers;
 import com.cloudinary.Singleton;
 import com.cloudinary.utils.ObjectUtils;
 import me.cal1br.cargram.entities.Car;
+import me.cal1br.cargram.entities.CarMod;
 import me.cal1br.cargram.entities.User;
 import me.cal1br.cargram.models.CarModel;
+import me.cal1br.cargram.models.ModModel;
 import me.cal1br.cargram.models.PhotoUpload;
 import me.cal1br.cargram.services.CarService;
 import me.cal1br.cargram.utils.LoginRequired;
@@ -23,6 +25,7 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -42,6 +45,13 @@ public class CarsController {
     public List<Car> getCars() {
         return carService.getAll();
     }
+    @LoginRequired
+    @GetMapping("/feed")
+    public List<Car> getRandomCars() {
+        final List<Car> all = carService.getAll();
+        Collections.shuffle(all);
+        return all;
+    }
 
     @LoginRequired
     @GetMapping("/{id}")
@@ -55,6 +65,12 @@ public class CarsController {
         final Object userObj = request.getAttribute("user");
         final User user = (User) userObj;
         return carService.getCarsForUser(user);
+    }
+
+    @LoginRequired
+    @GetMapping("/getmods/{carId}")
+    public List<CarMod> getModsForCar(@PathVariable final long carId) {
+        return carService.getModsForCarId(carId);
     }
 
     /**
@@ -76,8 +92,25 @@ public class CarsController {
         return carService.addCar(car, user);
     }
 
+    @LoginRequired
+    @PostMapping("/addmod/{carId}")
+    public CarMod createCarMod(@RequestBody final ModModel modModel, @PathVariable final long carId, final HttpServletRequest request) throws URISyntaxException { //todo add dtos
+        final Object userObj = request.getAttribute("user");
+        final User user = (User) userObj;
+        if(carService.checkOwnership(carId,user)){
+            return carService.addCarMod(carId, modModel);
+        }
+        else {
+            throw new RuntimeException("You do not own the car!");
+        }
+    }
+
+    @LoginRequired
     @DeleteMapping("/{id}")
-    public ResponseEntity deleteCar(@PathVariable long id) {
+    public ResponseEntity deleteCar(@PathVariable long id,final HttpServletRequest request) {
+        final Object userObj = request.getAttribute("user");
+        final User user = (User) userObj;
+        if(carService.checkOwnership(id,user));
         carService.deleteById(id);
         return ResponseEntity.ok().build();
     }
@@ -106,6 +139,31 @@ public class CarsController {
             StringBuilder sb = new StringBuilder(CLOUD_REPOSITORY);
             sb.append(photoUpload.getPublicId()).append('.').append(photoUpload.getFormat());
             carService.savePhoto(sb.toString(), carService.getById(carId));
+        }
+    }
+    @LoginRequired
+    @SuppressWarnings("rawtypes")
+    @PostMapping("/uploadmodphoto/{modId}")
+    public void uploadModPhoto(@ModelAttribute final PhotoUpload photoUpload, @PathVariable long modId) throws IOException {
+        if (photoUpload.getFile() != null && !photoUpload.getFile().isEmpty()) {
+            final Map uploadResult;
+            uploadResult = Singleton.getCloudinary().uploader().upload(photoUpload.getFile().getBytes(),
+                    ObjectUtils.asMap("resource_type", "auto"));
+            photoUpload.setPublicId((String) uploadResult.get("public_id"));
+            final Object version = uploadResult.get("version");
+            if (version instanceof Integer) {
+                photoUpload.setVersion(Long.valueOf((Integer) version));
+            } else {
+                photoUpload.setVersion((Long) version);
+            }
+
+            photoUpload.setSignature((String) uploadResult.get("signature"));
+            photoUpload.setFormat((String) uploadResult.get("format"));
+            photoUpload.setResourceType((String) uploadResult.get("resource_type"));
+
+            StringBuilder sb = new StringBuilder(CLOUD_REPOSITORY);
+            sb.append(photoUpload.getPublicId()).append('.').append(photoUpload.getFormat());
+            carService.saveModPhoto(sb.toString(), carService.getModById(modId));
         }
     }
 }
