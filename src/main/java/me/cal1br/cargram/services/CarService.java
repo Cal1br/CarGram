@@ -1,6 +1,8 @@
 package me.cal1br.cargram.services;
 
 import me.cal1br.cargram.entities.Car;
+import me.cal1br.cargram.entities.User;
+import me.cal1br.cargram.models.CarModel;
 import me.cal1br.cargram.repositories.CarRepository;
 import org.springframework.stereotype.Service;
 
@@ -29,11 +31,27 @@ public class CarService {
         return (List<Car>) carRepository.findAll();
     }
 
-    public Car save(final Car car) {
+    public Car addCar(final CarModel carmodel, User user) {
+        final Car car = new Car();
+        car.setOwner(user);
+        car.setName(carmodel.getName());
+        car.setModel(carmodel.getModel());
+        car.setDescription(carmodel.getDescription());
+        car.setHorsepower(carmodel.getHorsepower());
+        car.setEngineDisplacement(carmodel.getEngineDisplacement());
+        car.setManufactureDate(carmodel.getManufactureDate());
         return carRepository.save(car);
     }
-
+    public void savePhoto(final String profilePicLink, final Car car) {
+        car.setPhoto(profilePicLink);
+        carRepository.save(car);
+    }
     public CarRepository getCarRepository() {
         return carRepository;
+    }
+
+    public List<Car> getCarsForUser(final User user) {
+        Optional<List<Car>> optionalCars = carRepository.findByOwner(user);
+        return optionalCars.orElse(null);
     }
 }
