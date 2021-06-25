@@ -31,6 +31,16 @@ public class Car {
     private float engineDisplacement;
     @Column(nullable = false, updatable = false)
     private Date manufactureDate;
+    @Column
+    private String photo;
+
+    public String getPhoto() {
+        return photo;
+    }
+
+    public void setPhoto(final String photo) {
+        this.photo = photo;
+    }
 
     public long getCarId() {
         return carId;

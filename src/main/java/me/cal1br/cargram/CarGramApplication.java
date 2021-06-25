@@ -7,6 +7,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 public class CarGramApplication {
 
     public static void main(String[] args) {
+        System.out.println(System.getenv("CLOUDINARY_URL"));
         SpringApplication.run(CarGramApplication.class, args);
     }
 

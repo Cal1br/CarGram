@@ -1,5 +1,7 @@
 package me.cal1br.cargram.entities;
 
+import me.cal1br.cargram.models.UserDto;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -27,9 +29,19 @@ public class User {
     private Timestamp lastOnline;
     @Column(nullable = false,updatable = false)
     private Date accountCreation;
+    @Column
+    private String profilePic;
 
     public User(){
 
+    }
+
+    public String getProfilePic() {
+        return profilePic;
+    }
+
+    public void setProfilePic(final String profilePic) {
+        this.profilePic = profilePic;
     }
 
     public long getUserId() {
@@ -87,7 +99,9 @@ public class User {
     public void setAccountCreation(final Date accountCreation) {
         this.accountCreation = accountCreation;
     }
-
+    public UserDto toDto(){
+        return new UserDto(userId,username,biography, profilePic, accountCreation);
+    }
     @Override
     public String toString() {
         return "User{" +

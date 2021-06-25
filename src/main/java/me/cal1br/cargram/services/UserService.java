@@ -6,6 +6,7 @@ import me.cal1br.cargram.repositories.UserRepository;
 import org.mindrot.jbcrypt.BCrypt;
 import org.springframework.stereotype.Service;
 
+import java.sql.Blob;
 import java.sql.Date;
 import java.sql.Timestamp;
 import java.time.Instant;
@@ -59,5 +60,10 @@ public class UserService {
         else {
             throw new RuntimeException("Incorrect password");
         }
+    }
+
+    public void savePhoto(final String profilePicLink, final User user) {
+        user.setProfilePic(profilePicLink);
+        userRepository.save(user);
     }
 }
