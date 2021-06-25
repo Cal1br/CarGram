@@ -48,20 +48,31 @@ public class UserService {
         //
         return userRepository.save(user);
     }
-
+    public void logout(final User user){
+        user.setLastOnline(Timestamp.from(Instant.now()));
+        user.setOnline(false);
+        userRepository.save(user);
+    }
     public String login(final UserModel model) {
         final Optional<User> optionalUser = userRepository.findByUsername(model.getUsername());
         if(optionalUser.isEmpty()){
             throw new RuntimeException("No such user");
         }
         if(BCrypt.checkpw(model.getPassword(),optionalUser.get().getPassword())){
+            final User user = optionalUser.get();
+            user.setLastOnline(Timestamp.from(Instant.now()));
+            user.setOnline(true);
+            userRepository.save(user);
             return jwtService.sign(optionalUser.get().getUserId(),24);
         }
         else {
             throw new RuntimeException("Incorrect password");
         }
     }
-
+    public void saveBiography(final String biography, final User user){
+            user.setBiography(biography);
+            userRepository.save(user);
+    }
     public void savePhoto(final String profilePicLink, final User user) {
         user.setProfilePic(profilePicLink);
         userRepository.save(user);

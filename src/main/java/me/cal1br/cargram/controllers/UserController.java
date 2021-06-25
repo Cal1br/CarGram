@@ -98,5 +98,23 @@ public class UserController {
            userService.savePhoto(sb.toString(),user);
         }
     }
-
+    @LoginRequired
+    @PostMapping("/uploadbiography")
+    public void uploadBiography(@RequestBody final String biography, final HttpServletRequest request) {
+        final Object userObj = request.getAttribute("user");
+        final User user = (User) userObj;
+        if (biography.length() <= 2000) {
+            userService.saveBiography(biography,user);
+        }
+        else {
+            throw new RuntimeException("Biography too large, max is 2000 characters");
+        }
+    }
+    @LoginRequired
+    @GetMapping("/logout")
+    public void logoutUser(final HttpServletRequest request){
+        final Object userObj = request.getAttribute("user");
+        final User user = (User) userObj;
+        userService.logout(user);
+    }
 }

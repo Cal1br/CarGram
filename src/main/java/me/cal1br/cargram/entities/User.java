@@ -21,7 +21,7 @@ public class User {
     private String username;
     @Column(nullable = false)
     private String password;
-    @Column(nullable = true,updatable = true)
+    @Column(nullable = true,updatable = true,length = 2000)
     private String biography;
     @Column(nullable = false)
     private boolean isOnline;
@@ -113,5 +113,9 @@ public class User {
                 ", lastOnline=" + lastOnline +
                 ", accountCreation=" + accountCreation +
                 '}';
+    }
+
+    public void updateLastOnline() {
+
     }
 }
