@@ -77,4 +77,12 @@ public class UserService {
         user.setProfilePic(profilePicLink);
         userRepository.save(user);
     }
+
+    public User getByName(final String name) {
+        return userRepository.findByUsername(name).orElse(null);
+    }
+
+    public boolean userExists(final String name) {
+        return userRepository.findByUsername(name).isPresent();
+    }
 }

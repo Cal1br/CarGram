@@ -28,7 +28,7 @@ import java.util.Map;
 @RestController
 @RequestMapping("/user")
 public class UserController {
-    private final String CLOUD_REPOSITORY = "https://res.cloudinary.com/calibri-me/image/upload/h_50,q_auto/";
+    private final String CLOUD_REPOSITORY = "https://res.cloudinary.com/calibri-me/image/upload/w_600,q_auto/";
     private final UserService userService;
     private final JWTService jwtService;
 
@@ -36,10 +36,17 @@ public class UserController {
         this.userService = userService;
         this.jwtService = jwtService;
     }
+
     @LoginRequired
-    @GetMapping("/{id}")
-    public User getUserById(@PathVariable final long id) {
-        return userService.getById(id);
+    @GetMapping("/{name}")
+    public User getUserByName(@PathVariable final String name) {
+        return userService.getByName(name);
+    }
+
+    @LoginRequired
+    @GetMapping("/exists/{name}")
+    public boolean checkUserExists(@PathVariable final String name){
+        return userService.userExists(name);
     }
     @LoginRequired
     @GetMapping("/all")
@@ -79,7 +86,7 @@ public class UserController {
     @LoginRequired
     @SuppressWarnings("rawtypes")
     @PostMapping("/uploadPfp")
-    public void uploadPhoto(@ModelAttribute final PhotoUpload photoUpload,final HttpServletRequest request) throws IOException {
+    public void uploadPhoto(@ModelAttribute final PhotoUpload photoUpload, final HttpServletRequest request) throws IOException {
         final Object userObj = request.getAttribute("user");
         final User user = (User) userObj;
 
@@ -99,26 +106,27 @@ public class UserController {
             photoUpload.setFormat((String) uploadResult.get("format"));
             photoUpload.setResourceType((String) uploadResult.get("resource_type"));
 
-           StringBuilder sb = new StringBuilder(CLOUD_REPOSITORY);
-           sb.append(photoUpload.getPublicId()).append('.').append(photoUpload.getFormat());
-           userService.savePhoto(sb.toString(),user);
+            StringBuilder sb = new StringBuilder(CLOUD_REPOSITORY);
+            sb.append(photoUpload.getPublicId()).append('.').append(photoUpload.getFormat());
+            userService.savePhoto(sb.toString(), user);
         }
     }
+
     @LoginRequired
     @PostMapping("/uploadbiography")
     public void uploadBiography(@RequestBody final String biography, final HttpServletRequest request) {
         final Object userObj = request.getAttribute("user");
         final User user = (User) userObj;
         if (biography.length() <= 2000) {
-            userService.saveBiography(biography,user);
-        }
-        else {
+            userService.saveBiography(biography, user);
+        } else {
             throw new RuntimeException("Biography too large, max is 2000 characters");
         }
     }
+
     @LoginRequired
     @GetMapping("/logout")
-    public void logoutUser(final HttpServletRequest request){
+    public void logoutUser(final HttpServletRequest request) {
         final Object userObj = request.getAttribute("user");
         final User user = (User) userObj;
         userService.logout(user);

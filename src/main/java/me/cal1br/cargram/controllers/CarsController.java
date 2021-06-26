@@ -9,6 +9,7 @@ import me.cal1br.cargram.models.CarModel;
 import me.cal1br.cargram.models.ModModel;
 import me.cal1br.cargram.models.PhotoUpload;
 import me.cal1br.cargram.services.CarService;
+import me.cal1br.cargram.services.UserService;
 import me.cal1br.cargram.utils.LoginRequired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -34,10 +35,12 @@ import java.util.Map;
 @RequestMapping("/cars")
 public class CarsController {
     private final String CLOUD_REPOSITORY = "https://res.cloudinary.com/calibri-me/image/upload/h_600,q_auto/";
-    private CarService carService;
+    private final CarService carService;
+    private final UserService userService;
 
-    public CarsController(final CarService carService) {
+    public CarsController(final CarService carService, final UserService userService) {
         this.carService = carService;
+        this.userService = userService;
     }
 
     @LoginRequired
@@ -52,7 +55,11 @@ public class CarsController {
         Collections.shuffle(all);
         return all;
     }
-
+    @LoginRequired
+    @GetMapping("/getforuser/{username}")
+    public List<Car> getForUser(@PathVariable String username) {
+        return carService.getCarsForUser(userService.getByName(username));
+    }
     @LoginRequired
     @GetMapping("/{id}")
     public Car getCar(@PathVariable long id) {
