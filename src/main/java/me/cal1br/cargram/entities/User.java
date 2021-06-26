@@ -100,7 +100,7 @@ public class User {
         this.accountCreation = accountCreation;
     }
     public UserDto toDto(){
-        return new UserDto(userId,username,biography, profilePic, accountCreation);
+        return new UserDto(userId,username,biography, isOnline, lastOnline, profilePic, accountCreation);
     }
     @Override
     public String toString() {

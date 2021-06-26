@@ -21,7 +21,7 @@ public class Car {
     private User owner;
     @Column(nullable = false, length = 15)
     private String name;
-    @Column(nullable = false, length = 15)
+    @Column(nullable = false, length = 25)
     private String model;
     @Column(length = 1500)
     private String description;

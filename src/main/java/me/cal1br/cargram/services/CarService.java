@@ -65,7 +65,7 @@ public class CarService {
 
     public boolean checkOwnership(final long carId, final User user) {
         final Optional<Car> car = carRepository.findByCarId(carId);
-        if (car.isPresent() && car.get().getOwner().equals(user)) {
+        if (car.isPresent() && car.get().getOwner().getUserId()==user.getUserId()) {
             return true;
         }
         return false;
