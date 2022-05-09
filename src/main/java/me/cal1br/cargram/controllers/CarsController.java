@@ -48,6 +48,7 @@ public class CarsController {
     public List<Car> getCars() {
         return carService.getAll();
     }
+
     @LoginRequired
     @GetMapping("/feed")
     public List<Car> getRandomCars() {
@@ -55,11 +56,13 @@ public class CarsController {
         Collections.shuffle(all);
         return all;
     }
+
     @LoginRequired
     @GetMapping("/getforuser/{username}")
     public List<Car> getForUser(@PathVariable String username) {
         return carService.getCarsForUser(userService.getByName(username));
     }
+
     @LoginRequired
     @GetMapping("/{id}")
     public Car getCar(@PathVariable long id) {
@@ -80,15 +83,17 @@ public class CarsController {
         return carService.getModsForCarId(carId);
     }
 
-    /**
-     * Update car Horsepower and description
-     */
+
     @PutMapping("/{id}")
     public ResponseEntity updateCar(@PathVariable long id, @RequestBody Car car) {
-        Car currentClient = carService.getCarRepository().findByCarId(id).orElseThrow(RuntimeException::new);
-        car.setHorsepower(car.getHorsepower());
-        car.setDescription(car.getDescription());
-        return ResponseEntity.ok(currentClient);
+        final Car currentCar = carService.getCarRepository().findByCarId(id).orElseThrow(RuntimeException::new);
+        currentCar.setName(car.getName());
+        currentCar.setModel(car.getModel());
+        currentCar.setDescription(car.getDescription());
+        currentCar.setHorsepower(car.getHorsepower());
+        currentCar.setEngineDisplacement(car.getEngineDisplacement());
+        carService.getCarRepository().save(currentCar);
+        return ResponseEntity.ok(currentCar);
     }
 
     @LoginRequired
@@ -104,20 +109,19 @@ public class CarsController {
     public CarMod createCarMod(@RequestBody final ModModel modModel, @PathVariable final long carId, final HttpServletRequest request) throws URISyntaxException { //todo add dtos
         final Object userObj = request.getAttribute("user");
         final User user = (User) userObj;
-        if(carService.checkOwnership(carId,user)){
+        if (carService.checkOwnership(carId, user)) {
             return carService.addCarMod(carId, modModel);
-        }
-        else {
+        } else {
             throw new RuntimeException("You do not own the car!");
         }
     }
 
     @LoginRequired
     @DeleteMapping("/{id}")
-    public ResponseEntity deleteCar(@PathVariable long id,final HttpServletRequest request) {
+    public ResponseEntity deleteCar(@PathVariable long id, final HttpServletRequest request) {
         final Object userObj = request.getAttribute("user");
         final User user = (User) userObj;
-        if(carService.checkOwnership(id,user));
+        if (carService.checkOwnership(id, user)) ;
         carService.deleteById(id);
         return ResponseEntity.ok().build();
     }
@@ -148,6 +152,7 @@ public class CarsController {
             carService.savePhoto(sb.toString(), carService.getById(carId));
         }
     }
+
     @LoginRequired
     @SuppressWarnings("rawtypes")
     @PostMapping("/uploadmodphoto/{modId}")
