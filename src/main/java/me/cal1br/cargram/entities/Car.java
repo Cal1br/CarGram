@@ -11,13 +11,13 @@ import javax.persistence.Table;
 import java.sql.Date;
 
 @Entity
-@Table
+@Table(name = "car")
 public class Car {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long carId; //todo maybe replace with long?
     @ManyToOne
-    @JoinColumn(name = "userId", nullable = false)
+    @JoinColumn(name = "owner_id", nullable = false)
     private User owner;
     @Column(nullable = false, length = 15)
     private String name;
