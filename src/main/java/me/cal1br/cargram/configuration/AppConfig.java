@@ -19,6 +19,6 @@ public class AppConfig implements WebMvcConfigurer {
 
     @Override
     public void addInterceptors(final InterceptorRegistry registry) {
-        registry.addInterceptor(new LoginInterceptor(jwtService,userService));
+        registry.addInterceptor(new LoginInterceptor(jwtService, userService));
     }
 }

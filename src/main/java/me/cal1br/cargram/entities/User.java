@@ -17,22 +17,22 @@ public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long userId;
-    @Column(unique = true, nullable = false,updatable = false,length = 25)
+    @Column(unique = true, nullable = false, updatable = false, length = 25)
     private String username;
     @Column(nullable = false)
     private String password;
-    @Column(nullable = true,updatable = true,length = 2000)
+    @Column(nullable = true, updatable = true, length = 2000)
     private String biography;
     @Column(nullable = false)
     private boolean isOnline;
     @Column(nullable = false)
     private Timestamp lastOnline;
-    @Column(nullable = false,updatable = false)
+    @Column(nullable = false, updatable = false)
     private Date accountCreation;
     @Column
     private String profilePic;
 
-    public User(){
+    public User() {
 
     }
 
@@ -99,9 +99,11 @@ public class User {
     public void setAccountCreation(final Date accountCreation) {
         this.accountCreation = accountCreation;
     }
-    public UserDto toDto(){
-        return new UserDto(userId,username,biography, isOnline, lastOnline, profilePic, accountCreation);
+
+    public UserDto toDto() {
+        return new UserDto(userId, username, biography, isOnline, lastOnline, profilePic, accountCreation);
     }
+
     @Override
     public String toString() {
         return "User{" +

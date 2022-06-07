@@ -1,16 +1,19 @@
 package me.cal1br.cargram.controllers;
 
-import com.cloudinary.Singleton;
-import com.cloudinary.utils.ObjectUtils;
 import me.cal1br.cargram.entities.Car;
 import me.cal1br.cargram.entities.CarMod;
 import me.cal1br.cargram.entities.User;
+import me.cal1br.cargram.exceptions.InvalidModelException;
 import me.cal1br.cargram.models.CarModel;
 import me.cal1br.cargram.models.ModModel;
 import me.cal1br.cargram.models.PhotoUpload;
 import me.cal1br.cargram.services.CarService;
+import me.cal1br.cargram.services.ImageService;
 import me.cal1br.cargram.services.UserService;
+import me.cal1br.cargram.utils.ImageType;
 import me.cal1br.cargram.utils.LoginRequired;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -24,23 +27,32 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
+import java.util.UUID;
 
 @CrossOrigin
 @RestController
 @RequestMapping("/cars")
 public class CarsController {
-    private final String CLOUD_REPOSITORY = "https://res.cloudinary.com/calibri-me/image/upload/h_600,q_auto/";
+
+    //todo configure logback.xml
+    private static final Logger LOGGER = LoggerFactory.getLogger(CarsController.class);
+
     private final CarService carService;
     private final UserService userService;
+    //todo move dependencies to relative controllers and services
+    private final ImageService imageService;
 
-    public CarsController(final CarService carService, final UserService userService) {
+    public CarsController(final CarService carService, final UserService userService, final ImageService imageService) {
         this.carService = carService;
         this.userService = userService;
+        this.imageService = imageService;
     }
 
     @LoginRequired
@@ -85,7 +97,7 @@ public class CarsController {
 
 
     @PutMapping("/{id}")
-    public ResponseEntity updateCar(@PathVariable long id, @RequestBody Car car) {
+    public ResponseEntity<Car> updateCar(@PathVariable long id, @RequestBody Car car) {
         final Car currentCar = carService.getCarRepository().findByCarId(id).orElseThrow(RuntimeException::new);
         currentCar.setName(car.getName());
         currentCar.setModel(car.getModel());
@@ -118,65 +130,43 @@ public class CarsController {
 
     @LoginRequired
     @DeleteMapping("/{id}")
-    public ResponseEntity deleteCar(@PathVariable long id, final HttpServletRequest request) {
+    public ResponseEntity<String> deleteCar(@PathVariable long id, final HttpServletRequest request) {
         final Object userObj = request.getAttribute("user");
         final User user = (User) userObj;
         if (carService.checkOwnership(id, user)) ;
         carService.deleteById(id);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok().body("Success");
     }
 
     @LoginRequired
     @SuppressWarnings("rawtypes")
     @PostMapping("/uploadphoto/{carId}")
     public void uploadPhoto(@ModelAttribute final PhotoUpload photoUpload, @PathVariable long carId) throws IOException {
+        //TODO ADD DOWNLOAD PICTURE BUTTON!
+        //todo FIX db
+        carService.savePhoto(imageService.saveImage(photoUpload, ImageType.CAR_IMAGE), carService.getById(carId));
 
-        if (photoUpload.getFile() != null && !photoUpload.getFile().isEmpty()) {
-            final Map uploadResult;
-            uploadResult = Singleton.getCloudinary().uploader().upload(photoUpload.getFile().getBytes(),
-                    ObjectUtils.asMap("resource_type", "auto"));
-            photoUpload.setPublicId((String) uploadResult.get("public_id"));
-            final Object version = uploadResult.get("version");
-            if (version instanceof Integer) {
-                photoUpload.setVersion(Long.valueOf((Integer) version));
-            } else {
-                photoUpload.setVersion((Long) version);
-            }
-
-            photoUpload.setSignature((String) uploadResult.get("signature"));
-            photoUpload.setFormat((String) uploadResult.get("format"));
-            photoUpload.setResourceType((String) uploadResult.get("resource_type"));
-
-            StringBuilder sb = new StringBuilder(CLOUD_REPOSITORY);
-            sb.append(photoUpload.getPublicId()).append('.').append(photoUpload.getFormat());
-            carService.savePhoto(sb.toString(), carService.getById(carId));
-        }
     }
 
     @LoginRequired
     @SuppressWarnings("rawtypes")
     @PostMapping("/uploadmodphoto/{modId}")
     public void uploadModPhoto(@ModelAttribute final PhotoUpload photoUpload, @PathVariable long modId) throws IOException {
-        if (photoUpload.getFile() != null && !photoUpload.getFile().isEmpty()) {
-            final Map uploadResult;
-            uploadResult = Singleton.getCloudinary().uploader().upload(photoUpload.getFile().getBytes(),
-                    ObjectUtils.asMap("resource_type", "auto"));
-            photoUpload.setPublicId((String) uploadResult.get("public_id"));
-            final Object version = uploadResult.get("version");
-            if (version instanceof Integer) {
-                photoUpload.setVersion(Long.valueOf((Integer) version));
-            } else {
-                photoUpload.setVersion((Long) version);
-            }
-
-            photoUpload.setSignature((String) uploadResult.get("signature"));
-            photoUpload.setFormat((String) uploadResult.get("format"));
-            photoUpload.setResourceType((String) uploadResult.get("resource_type"));
-
-            StringBuilder sb = new StringBuilder(CLOUD_REPOSITORY);
-            sb.append(photoUpload.getPublicId()).append('.').append(photoUpload.getFormat());
-            carService.saveModPhoto(sb.toString(), carService.getModById(modId));
+        if (photoUpload.getFile() == null || photoUpload.getFile().isEmpty()) {
+            throw new InvalidModelException("Photo can't be empty!");
         }
+        final URI fileLocation = URI.create("storage/cars/" + UUID.randomUUID() + ".img");
+        final File file = new File(fileLocation); //todo get format?
+
+        try (final FileOutputStream fileOutputStream = new FileOutputStream(file)) {
+            fileOutputStream.write(photoUpload.getFile().getBytes());
+        } catch (IOException ioException) {
+            LOGGER.error("An exception has occurred while processing: " + fileLocation + " from user: ");//todo
+        }
+        //todo save in db
+        //todo see what this does
+        carService.saveModPhoto(fileLocation.toString(), carService.getModById(modId));
+
     }
 }
 

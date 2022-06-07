@@ -17,23 +17,21 @@ public class CarMod {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long modId;
     @ManyToOne
-    @JoinColumn(name = "carId",nullable = false)
+    @JoinColumn(name = "carId", nullable = false)
     private Car car;
     @Column()
     private float price;
-    @Column(length = 1500,nullable = false)
+    @Column(length = 1500, nullable = false)
     private String description;
     @Column()
     private String modPicture;
     @Column()
     private Date date;
-    //Picture;
 
     public CarMod(final Car car, final float price, final String description, final Date date) {
         this.car = car;
         this.price = price;
         this.description = description;
-        this.modPicture = modPicture;
         this.date = date;
     }
 

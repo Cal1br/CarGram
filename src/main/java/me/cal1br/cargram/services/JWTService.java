@@ -12,7 +12,7 @@ import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 
 @Service
-public class JWTService{
+public class JWTService {
     private final HMACSigner singer;
     private final HMACVerifier verifier;
     private final JWTEncoder encoder;
@@ -25,24 +25,25 @@ public class JWTService{
         this.decoder = JWT.getDecoder();
     }
 
-    /**Creates a jwt token from usedid
+    /**
+     * Creates a jwt token from usedid
      */
-    public String sign(final long id,final int hours){
+    public String sign(final long id, final int hours) {
         final JWT jwt = new JWT()
                 .setExpiration(ZonedDateTime.now(ZoneOffset.UTC).plusHours(hours))
                 .setIssuedAt(ZonedDateTime.now(ZoneOffset.UTC));
-        jwt.getOtherClaims().put("id",id+"");
-        return encoder.encode(jwt,singer);
+        jwt.getOtherClaims().put("id", id + "");
+        return encoder.encode(jwt, singer);
     }
 
-    public Long getIdFromToken(final String token){
+    public Long getIdFromToken(final String token) {
         final JWT decode;
-        try{
-            decode = decoder.decode(token,verifier);
-        }catch (IllegalArgumentException illegalArgumentException){
+        try {
+            decode = decoder.decode(token, verifier);
+        } catch (IllegalArgumentException illegalArgumentException) {
             return null;
         }
-        if(decode.isExpired()){
+        if (decode.isExpired()) {
             return null;
         }
         return Long.parseLong((String) decode.getOtherClaims().get("id"));

@@ -22,24 +22,23 @@ public class LoginInterceptor implements AsyncHandlerInterceptor {
     @Override
     public boolean preHandle(final HttpServletRequest request, final HttpServletResponse response, final Object handler) {
         final HandlerMethod handlerMethod;
-        try{
+        try {
             handlerMethod = (HandlerMethod) handler;
-        }
-        catch (Exception ex){
+        } catch (Exception ex) {
             return true;
         }
         final LoginRequired loginRequired = handlerMethod.getMethod().getAnnotation(LoginRequired.class);
         if (loginRequired == null) {
             return true;
         }
-        try{
+        try {
             final String token = request.getHeader("Authorization");
             final Long idFromToken = jwtService.getIdFromToken(token);
-            if(idFromToken == null){
+            if (idFromToken == null) {
                 throw new AuthException();
             }
-            request.setAttribute("user",userService.getById(idFromToken));
-        }catch (Exception e){
+            request.setAttribute("user", userService.getById(idFromToken));
+        } catch (Exception e) {
             throw new AuthException();
         }
 
