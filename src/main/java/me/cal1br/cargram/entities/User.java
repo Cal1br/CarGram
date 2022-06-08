@@ -12,24 +12,25 @@ import java.sql.Date;
 import java.sql.Timestamp;
 
 @Entity
-@Table
+@Table(name = "users")
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "user_id")
     private long userId;
-    @Column(unique = true, nullable = false, updatable = false, length = 25)
+    @Column(unique = true, nullable = false, updatable = false, length = 25, name = "username")
     private String username;
-    @Column(nullable = false)
+    @Column(nullable = false, name = "password")
     private String password;
-    @Column(nullable = true, updatable = true, length = 2000)
+    @Column(nullable = true, updatable = true, length = 2000, name = "biography")
     private String biography;
-    @Column(nullable = false)
+    @Column(nullable = false, name = "is_online")
     private boolean isOnline;
-    @Column(nullable = false)
+    @Column(nullable = false, name = "last_online")
     private Timestamp lastOnline;
-    @Column(nullable = false, updatable = false)
+    @Column(nullable = false, updatable = false, name = "account_creation")
     private Date accountCreation;
-    @Column
+    @Column(name = "profile_pic")
     private String profilePic;
 
     public User() {
