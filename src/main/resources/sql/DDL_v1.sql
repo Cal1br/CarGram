@@ -8,7 +8,7 @@ create table users
     is_online        boolean,
     last_online      Timestamp,
     account_creation Date,
-    photo            varchar(50),
+    photo            varchar(50)
 );
 DROP TABLE IF EXISTS car CASCADE;
 create table car
