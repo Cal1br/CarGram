@@ -11,8 +11,7 @@ import java.io.IOException;
 import java.io.InputStream;
 
 @RestController
-public class ImageControllerImpl implements ImageController{
-
+public class ImageControllerImpl implements ImageController {
 
 
     private final int bufferSize;
@@ -20,8 +19,7 @@ public class ImageControllerImpl implements ImageController{
 
     @Autowired
     public ImageControllerImpl(final ImageService service,
-                               @Value("{image.buffer_size:1024") final int bufferSize
-                               ) {
+                               @Value("${image.buffer_size:1024}") final int bufferSize) {
         this.service = service;
         this.bufferSize = bufferSize;
     }
@@ -32,7 +30,7 @@ public class ImageControllerImpl implements ImageController{
         resp.setHeader("Content-disposition", "attachment; filename=snimka.jpg");
 
         byte[] buffer = new byte[bufferSize];
-        try(final InputStream in = service.getImageInputStreamByLink(imgPath)){
+        try (final InputStream in = service.getImageInputStreamByLink(imgPath)) {
             int numBytesRead;
             final ServletOutputStream outputStream = resp.getOutputStream();
             while ((numBytesRead = in.read(buffer)) > 0) {
