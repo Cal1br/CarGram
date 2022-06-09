@@ -7,6 +7,21 @@ public class UserDto {
     private final long userId;
     private final String username;
     private final String biography;
+    private final boolean isOnline;
+    private final Timestamp lastOnline;
+    private final String profilePic;
+    private final Date accountCreation;
+
+    public UserDto(final long userId, final String username,
+                   final String biography, final boolean isOnline, final Timestamp lastOnline, final String profilePic, final Date accountCreation) {
+        this.userId = userId;
+        this.username = username;
+        this.biography = biography;
+        this.isOnline = isOnline;
+        this.lastOnline = lastOnline;
+        this.profilePic = profilePic;
+        this.accountCreation = accountCreation;
+    }
 
     public long getUserId() {
         return userId;
@@ -34,22 +49,6 @@ public class UserDto {
 
     public Date getAccountCreation() {
         return accountCreation;
-    }
-
-    private final boolean isOnline;
-    private final Timestamp lastOnline;
-    private final String profilePic;
-    private final Date accountCreation;
-
-    public UserDto(final long userId, final String username,
-                   final String biography, final boolean isOnline, final Timestamp lastOnline, final String profilePic, final Date accountCreation) {
-        this.userId = userId;
-        this.username = username;
-        this.biography = biography;
-        this.isOnline = isOnline;
-        this.lastOnline = lastOnline;
-        this.profilePic = profilePic;
-        this.accountCreation = accountCreation;
     }
 
 }

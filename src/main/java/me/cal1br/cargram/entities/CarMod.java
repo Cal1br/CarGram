@@ -1,39 +1,31 @@
 package me.cal1br.cargram.entities;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.sql.Date;
 
 @Entity
-@Table
+@Table(name = "car_mod")
 public class CarMod {
     @Id
+    @Column(name = "mod_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long modId;
     @ManyToOne
-    @JoinColumn(name = "car_id",nullable = false)
+    @JoinColumn(name = "car_id", nullable = false)
     private Car car;
     @Column()
     private float price;
-    @Column(length = 1500,nullable = false)
+    @Column(length = 1500, nullable = false)
     private String description;
     @Column()
     private String modPicture;
     @Column()
     private Date date;
-    //Picture;
 
     public CarMod(final Car car, final float price, final String description, final Date date) {
         this.car = car;
         this.price = price;
         this.description = description;
-        this.modPicture = modPicture;
         this.date = date;
     }
 

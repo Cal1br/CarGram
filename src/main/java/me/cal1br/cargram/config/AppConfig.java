@@ -1,4 +1,4 @@
-package me.cal1br.cargram.configuration;
+package me.cal1br.cargram.config;
 
 import me.cal1br.cargram.services.JWTService;
 import me.cal1br.cargram.services.UserService;
@@ -19,6 +19,6 @@ public class AppConfig implements WebMvcConfigurer {
 
     @Override
     public void addInterceptors(final InterceptorRegistry registry) {
-        registry.addInterceptor(new LoginInterceptor(jwtService,userService));
+        registry.addInterceptor(new LoginInterceptor(jwtService, userService));
     }
 }

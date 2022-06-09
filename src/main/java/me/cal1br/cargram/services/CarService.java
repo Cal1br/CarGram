@@ -16,12 +16,10 @@ import java.util.Optional;
 public class CarService {
     private final CarRepository carRepository;
     private final CarModRepository carModRepository;
-    private final UserService userService;
 
-    public CarService(final CarRepository carRepository, final CarModRepository carModRepository, UserService userService) {
+    public CarService(final CarRepository carRepository, final CarModRepository carModRepository) {
         this.carRepository = carRepository;
         this.carModRepository = carModRepository;
-        this.userService = userService;
     }
 
     public Car getById(final long id) {
@@ -65,10 +63,7 @@ public class CarService {
 
     public boolean checkOwnership(final long carId, final User user) {
         final Optional<Car> car = carRepository.findByCarId(carId);
-        if (car.isPresent() && car.get().getOwner().getUserId()==user.getUserId()) {
-            return true;
-        }
-        return false;
+        return car.isPresent() && car.get().getOwner().getUserId() == user.getUserId();
     }
 
     public CarMod addCarMod(final long carId, final ModModel modModel) {
@@ -76,6 +71,7 @@ public class CarService {
         return carModRepository.save(mod);
     }
 
+    //todo wtf?
     public void saveModPhoto(final String picLink, final CarMod mod) {
         mod.setModPicture(picLink);
         carModRepository.save(mod);
