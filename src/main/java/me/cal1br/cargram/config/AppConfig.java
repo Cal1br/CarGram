@@ -1,4 +1,4 @@
-package me.cal1br.cargram.configuration;
+package me.cal1br.cargram.config;
 
 import me.cal1br.cargram.services.JWTService;
 import me.cal1br.cargram.services.UserService;

@@ -4,7 +4,6 @@ import me.cal1br.cargram.exceptions.AuthException;
 import me.cal1br.cargram.services.JWTService;
 import me.cal1br.cargram.services.UserService;
 import org.springframework.web.method.HandlerMethod;
-import org.springframework.web.servlet.AsyncHandlerInterceptor;
 import org.springframework.web.servlet.HandlerInterceptor;
 
 import javax.servlet.http.HttpServletRequest;

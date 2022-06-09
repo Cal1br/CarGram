@@ -31,7 +31,7 @@ create table car_mod
     car_id      bigint,
     price       float,
     description varchar(1500),
-    mod_picture varchar(10),
+    mod_picture varchar(50),
     date        Date,
     CONSTRAINT FK_Car FOREIGN KEY (car_id) references car
 )

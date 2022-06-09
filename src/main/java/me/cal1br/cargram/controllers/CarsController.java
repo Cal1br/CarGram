@@ -15,26 +15,13 @@ import me.cal1br.cargram.utils.LoginRequired;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
-import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Collections;
 import java.util.List;
-import java.util.UUID;
 
 @CrossOrigin
 @RestController
@@ -155,18 +142,7 @@ public class CarsController {
         if (photoUpload.getFile() == null || photoUpload.getFile().isEmpty()) {
             throw new InvalidModelException("Photo can't be empty!");
         }
-        final URI fileLocation = URI.create("storage/cars/" + UUID.randomUUID() + ".img");
-        final File file = new File(fileLocation); //todo get format?
-
-        try (final FileOutputStream fileOutputStream = new FileOutputStream(file)) {
-            fileOutputStream.write(photoUpload.getFile().getBytes());
-        } catch (IOException ioException) {
-            LOGGER.error("An exception has occurred while processing: " + fileLocation + " from user: ");//todo
-        }
-        //todo save in db
-        //todo see what this does
-        carService.saveModPhoto(fileLocation.toString(), carService.getModById(modId));
-
+        carService.saveModPhoto(imageService.saveImage(photoUpload, ImageType.MOD_IMAGE), carService.getModById(modId));
     }
 }
 

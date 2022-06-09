@@ -9,13 +9,15 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URI;
+import javax.annotation.PostConstruct;
+import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.Arrays;
+import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 public class ImageServiceImpl implements ImageService {
@@ -25,7 +27,6 @@ public class ImageServiceImpl implements ImageService {
 
     public ImageServiceImpl(@Value("${image.location}") final String fileLocation) {
         this.imageLocationPrefix = fileLocation;
-        //TODO initialize storage (in post-construct maybe)
     }
 
     @Override
@@ -39,13 +40,12 @@ public class ImageServiceImpl implements ImageService {
         }
 
         final String imgSuffix = type.getPath() + UUID.randomUUID() + '.' + contentType.substring(contentType.indexOf('/') + 1); //todo is this format good enough?
-        final URI fileLocation = URI.create(imageLocationPrefix + imgSuffix); //todo format, and path
-        final File file = new File(fileLocation); //todo get format?
+        final File file = new File(imageLocationPrefix + imgSuffix); //todo get format?
 
         try (final FileOutputStream fileOutputStream = new FileOutputStream(file)) {
             fileOutputStream.write(photoUpload.getFile().getBytes());
         } catch (IOException ioException) {
-            LOGGER.error("An exception has occurred while processing: {} from user: ", fileLocation);//todo
+            LOGGER.error("An exception has occurred while processing: {} from user: ", imgSuffix);//todo
         }
         return imgSuffix;
     }
@@ -58,10 +58,22 @@ public class ImageServiceImpl implements ImageService {
         }
         //TODO CHECK FILE TYPE link.endsWith() and more!
         try {
-            return new FileInputStream(imageLocationPrefix + suffix);
+
+            return new FileInputStream(new File("storage/" + suffix));
         } catch (IOException exception) {
             LOGGER.error("Input output exception for image: {}", suffix);
         }
         throw new IllegalStateException("Couldn't find the image you were looking for!");
+    }
+
+    @PostConstruct
+    public void initializeDirectoryPath() throws IOException {
+        //no side effects in streams
+        final List<Path> paths = Arrays.stream(ImageType.values())
+                .map(type -> Paths.get("storage" + File.separator + type.getPath()))
+                .collect(Collectors.toList());
+        for (Path path : paths) {
+            Files.createDirectories(path);
+        }
     }
 }
