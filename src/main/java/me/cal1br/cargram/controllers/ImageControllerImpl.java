@@ -1,6 +1,8 @@
 package me.cal1br.cargram.controllers;
 
 import me.cal1br.cargram.services.ImageService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.RestController;
@@ -13,6 +15,7 @@ import java.io.InputStream;
 @RestController
 public class ImageControllerImpl implements ImageController {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(ImageControllerImpl.class);
 
     private final int bufferSize;
     private final ImageService service;
@@ -37,7 +40,7 @@ public class ImageControllerImpl implements ImageController {
                 outputStream.write(buffer, 0, numBytesRead);
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            LOGGER.error();
         }
     }
 }

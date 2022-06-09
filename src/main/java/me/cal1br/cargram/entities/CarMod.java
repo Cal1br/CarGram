@@ -11,13 +11,14 @@ import javax.persistence.Table;
 import java.sql.Date;
 
 @Entity
-@Table
+@Table(name = "car_mod")
 public class CarMod {
     @Id
+    @Column(name = "mod_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long modId;
     @ManyToOne
-    @JoinColumn(name = "carId", nullable = false)
+    @JoinColumn(name = "car_id", nullable = false)
     private Car car;
     @Column()
     private float price;
